@@ -1,3 +1,4 @@
+# ===============================================================
 # GO_VERSION: automatically update to most recent via dependabot
 FROM golang:1.26.1 AS builder
 WORKDIR /workspace
@@ -12,10 +13,16 @@ COPY ./ ./
 ARG VERSION
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -o go-test-coverage .
+    
+COPY docker-entrypoint.sh docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
 
-FROM gcr.io/distroless/base:latest
+# ===============================================================
+FROM debian:bookworm-slim
 WORKDIR /
+
+COPY --from=builder /workspace/docker-entrypoint.sh /docker-entrypoint.sh
 COPY --from=builder /workspace/go-test-coverage .
 COPY --from=builder /usr/local/go/bin/go /usr/local/go/bin/go
 ENV PATH="${PATH}:/usr/local/go/bin"
-ENTRYPOINT ["/go-test-coverage"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
