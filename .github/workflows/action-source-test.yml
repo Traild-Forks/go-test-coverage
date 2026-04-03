@@ -1,9 +1,12 @@
 name: action-test (source version)
-on: [push]
+on:
+  push:
+  pull_request:
 jobs:
   test:
     name: source test steps
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     uses: ./.github/workflows/action-test-steps.yml
     with:
       variant: source
-      version: ${{ github.sha }}
+      version: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
