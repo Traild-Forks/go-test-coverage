@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -19,8 +20,12 @@ type Stats struct {
 	AnnotationsWithoutComments []int
 }
 
-func (s Stats) UncoveredLinesCount() int {
+func (s Stats) UncoveredStmtCount() int {
 	return int(s.Total - s.Covered)
+}
+
+func (s Stats) UncoveredLinesCount() int {
+	return len(s.UncoveredLines)
 }
 
 func (s Stats) CoveredPercentage() int {
@@ -46,6 +51,12 @@ func (s Stats) Str() string {
 	}
 
 	return fmt.Sprintf("%.1f%% (%d/%d)", s.CoveredPercentageF(), s.Covered, s.Total)
+}
+
+func SortStatsByName(stats []Stats) {
+	slices.SortFunc(stats, func(a, b Stats) int {
+		return strings.Compare(a.Name, b.Name)
+	})
 }
 
 func StatsSearchMap(stats []Stats) map[string]Stats {
