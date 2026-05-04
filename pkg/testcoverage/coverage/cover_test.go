@@ -233,6 +233,19 @@ func Test_findFilePathMatchingSearch(t *testing.T) {
 	files := []FileInfo{NewFileInfo("test-pkg/foo.go")}
 	result := FindFilePathMatchingSearch(&files, "pkg/foo.go")
 	assert.Empty(t, result)
+
+	files = []FileInfo{NewFileInfo("baz/foo.go"), NewFileInfo("bar/baz/foo.go")}
+	result = FindFilePathMatchingSearch(&files, "foo.go")
+	assert.Equal(t, "baz/foo.go", result)
+
+	files = []FileInfo{NewFileInfo("baz/foo.go"), NewFileInfo("bar/baz/foo.go"), NewFileInfo("foo.go")}
+	result = FindFilePathMatchingSearch(&files, "foo.go")
+	assert.Equal(t, "foo.go", result)
+
+	// exact match file is the first element (bestIndex is -1 when 100% match is found)
+	files = []FileInfo{NewFileInfo("foo.go"), NewFileInfo("baz/foo.go")}
+	result = FindFilePathMatchingSearch(&files, "foo.go")
+	assert.Equal(t, "foo.go", result)
 }
 
 func Test_sumCoverage(t *testing.T) {
