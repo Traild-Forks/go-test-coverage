@@ -11,7 +11,7 @@ import (
 
 //nolint:nonamedreturns // relax
 func findModuleDirective(rootDir string) (module string, dir string) {
-	logger.L.Debug().Str("root dir", rootDir).Msg("searching for go.mod")
+	logger.L.Debug().Str("root_dir", rootDir).Msg("searching for go.mod")
 
 	goModFile := findGoModFile(rootDir)
 	if goModFile == "" {
@@ -30,8 +30,10 @@ func findModuleDirective(rootDir string) (module string, dir string) {
 
 	dir = filepath.Dir(goModFile)
 
-	logger.L.Debug().Str("module", module).Msg("using module directive")
-	logger.L.Debug().Str("rootdir", dir).Msg("root dir")
+	logger.L.Debug().
+		Str("root_dir", dir).
+		Str("module", module).
+		Msg("using module directive and root dir")
 
 	return module, dir
 }
